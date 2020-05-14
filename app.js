@@ -6,9 +6,13 @@ const createError = require('http-errors');
 const logger = require('morgan');
 const sassMiddleware = require('node-sass-middleware');
 const serveFavicon = require('serve-favicon');
-
+const connectMongo = require('connect-mongo');
+const mongoose = require('mongoose');
+const expressSession = require('express-session');
 const indexRouter = require('./routes/index');
 const authenticationRouter = require('./routes/authentication');
+
+const passport = require('passport');
 
 const app = express();
 
@@ -29,6 +33,13 @@ app.use(
 );
 app.use(serveFavicon(join(__dirname, 'public/images', 'favicon.ico')));
 app.use(express.static(join(__dirname, 'public')));
+
+require('./configure-passport');
+
+//Mount passport as middleware on our application.
+app.use(passport.initialize());
+app.use(passport.session());
+
 
 app.use('/', indexRouter);
 app.use('/authentication', authenticationRouter);
